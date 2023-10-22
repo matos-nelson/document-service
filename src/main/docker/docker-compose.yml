@@ -1,0 +1,25 @@
+version: '3.8'
+
+name: document-service-container
+services:
+  app:
+    image: 'quarkus/document-service'
+    container_name: "document-service"
+    ports:
+      - '8080:8080'
+
+  localstack-s3-document:
+    container_name: "localstack-s3-document"
+    image: localstack/localstack
+    ports:
+      - "127.0.0.1:4566:4566"            # LocalStack Gateway
+      - "127.0.0.1:4510-4559:4510-4559"  # external services port range
+    environment:
+      SERVICES: s3
+      AWS_DEFAULT_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: test-key
+      AWS_SECRET_ACCESS_KEY: test-secret
+      DEBUG: ${DEBUG:-1}
+      DOCKER_HOST: unix:///var/run/docker.sock
+    volumes:
+      - ./../scripts/init-s3.sh:/etc/localstack/init/ready.d/init-s3.sh

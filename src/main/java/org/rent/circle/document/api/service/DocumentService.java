@@ -29,7 +29,7 @@ public class DocumentService {
 
         return s3Client.listObjects(listRequest).contents().stream()
             .map(item -> new FileObject(item.key(), item.size()))
-            .sorted(Comparator.comparing(FileObject::getKey))
+            .sorted(Comparator.comparing(FileObject::getDirectory))
             .collect(Collectors.toList());
     }
 }

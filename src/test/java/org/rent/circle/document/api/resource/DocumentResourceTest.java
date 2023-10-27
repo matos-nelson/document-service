@@ -18,16 +18,18 @@ public class DocumentResourceTest {
     @Test
     public void GET_WhenCalled_ShouldReturnFileListing() {
         // Arrange
+        long ownerId = 123L;
+
         // Act
         // Assert
         given()
             .contentType("application/json")
             .when()
-            .get()
+            .get("/owner/" + ownerId)
             .then()
             .statusCode(HttpStatus.SC_OK)
-            .body("[0].key", is("file.txt"),
-                "[0].directory", is("/"),
+            .body("[0].key", is("123/file.txt"),
+                "[0].directory", is("123/"),
                 "[0].fileName", is("file.txt"),
                 "[0].size", is(11));
     }

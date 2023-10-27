@@ -29,6 +29,7 @@ public class DocumentServiceTest {
     @Test
     public void getFileListing_WhenCalled_ShouldReturnFileListing() {
         // Arrange
+        long ownerId = 123L;
         S3Object s3Object = S3Object.builder().key("file.txt").size(100L).build();
         ListObjectsResponse listObjectsResponse = ListObjectsResponse.builder()
             .contents(Collections.singleton(s3Object))
@@ -36,7 +37,7 @@ public class DocumentServiceTest {
         when(s3Client.listObjects(Mockito.any(ListObjectsRequest.class))).thenReturn(listObjectsResponse);
 
         // Act
-        List<FileObject> result = documentService.getFileListing();
+        List<FileObject> result = documentService.getFileListing(ownerId);
 
         // Assert
         assertNotNull(result);

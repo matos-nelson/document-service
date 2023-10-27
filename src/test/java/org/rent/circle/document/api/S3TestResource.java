@@ -54,7 +54,7 @@ public class S3TestResource implements QuarkusTestResourceLifecycleManager {
 
                 PutObjectRequest objectRequest = PutObjectRequest.builder()
                     .bucket(bucketName)
-                    .key("file.txt")
+                    .key("123/file.txt")
                     .build();
 
                 client.putObject(objectRequest, RequestBody.fromString("Hello World"));

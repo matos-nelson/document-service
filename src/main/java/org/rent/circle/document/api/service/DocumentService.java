@@ -19,8 +19,13 @@ public class DocumentService {
     @ConfigProperty(name = "document.bucket.name")
     private String bucketName;
 
-    public List<FileObject> getFileListing() {
-        ListObjectsRequest listRequest = ListObjectsRequest.builder().bucket(bucketName).build();
+    public List<FileObject> getFileListing(Long ownerId) {
+        String folder = bucketName;
+
+        ListObjectsRequest listRequest = ListObjectsRequest.builder()
+            .bucket(folder)
+            .prefix(ownerId.toString())
+            .build();
 
         return s3Client.listObjects(listRequest).contents().stream()
             .map(item -> new FileObject(item.key(), item.size()))

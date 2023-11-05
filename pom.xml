@@ -12,10 +12,9 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-    <quarkus.platform.version>3.3.3</quarkus.platform.version>
+    <quarkus.platform.version>3.5.0</quarkus.platform.version>
     <quarkus-amazon-services.version>2.5.2</quarkus-amazon-services.version>
-    <awssdk.testcontainers.version>1.12.57</awssdk.testcontainers.version>
-    <lombok.version>1.18.26</lombok.version>
+    <lombok.version>1.18.30</lombok.version>
     <skipITs>true</skipITs>
     <surefire-plugin.version>3.0.0</surefire-plugin.version>
   </properties>
@@ -96,7 +95,7 @@
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk-core</artifactId>
-      <version>1.12.556</version>
+      <version>1.12.581</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

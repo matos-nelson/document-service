@@ -16,7 +16,7 @@
     <quarkus-amazon-services.version>2.5.2</quarkus-amazon-services.version>
     <lombok.version>1.18.30</lombok.version>
     <skipITs>true</skipITs>
-    <surefire-plugin.version>3.0.0</surefire-plugin.version>
+    <surefire-plugin.version>3.2.1</surefire-plugin.version>
   </properties>
   <dependencyManagement>
     <dependencies>

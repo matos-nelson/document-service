@@ -1,6 +1,6 @@
 package org.rent.circle.document.api.dto;
 
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.ws.rs.core.MediaType;
 import java.io.File;
 import lombok.AllArgsConstructor;
@@ -23,11 +23,11 @@ public class FormData {
 
     @RestForm
     @PartType(MediaType.TEXT_PLAIN)
-    @NotEmpty
+    @NotBlank
     private String filename;
 
     @RestForm
     @PartType(MediaType.TEXT_PLAIN)
-    @NotEmpty
+    @NotBlank
     private String mimetype;
 }

@@ -2,13 +2,19 @@ package org.rent.circle.document.api.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import java.io.File;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.rent.circle.document.api.dto.FileObject;
+import org.rent.circle.document.api.dto.FormData;
+import org.rent.circle.document.api.enums.Folder;
+import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 @ApplicationScoped
 public class DocumentService {
@@ -31,5 +37,16 @@ public class DocumentService {
             .map(item -> new FileObject(item.key(), item.size()))
             .sorted(Comparator.comparing(FileObject::getDirectory))
             .collect(Collectors.toList());
+    }
+
+    public PutObjectResponse upload(Folder folder, FormData formData) {
+
+        PutObjectRequest request = PutObjectRequest.builder()
+            .bucket(bucketName)
+            .key(folder.value + File.separator + formData.getFilename())
+            .contentType(formData.getMimetype())
+            .build();
+
+        return s3Client.putObject(request, RequestBody.fromFile(formData.getData()));
     }
 }

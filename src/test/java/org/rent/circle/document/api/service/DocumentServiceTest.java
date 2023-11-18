@@ -16,8 +16,11 @@ import org.mockito.Mockito;
 import org.rent.circle.document.api.dto.FileObject;
 import org.rent.circle.document.api.dto.FormData;
 import org.rent.circle.document.api.enums.Folder;
+import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
 import software.amazon.awssdk.services.s3.model.ListObjectsResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
@@ -54,6 +57,22 @@ public class DocumentServiceTest {
         // Assert
         assertNotNull(result);
         assertEquals(putObjectResponse, result);
+    }
+
+    @Test
+    public void download_WhenCalled_ShouldReturnDocument() {
+        // Arrange
+        byte[] bytes = new byte[10];
+        GetObjectResponse getObjectResponse = GetObjectResponse.builder().build();
+        ResponseBytes<GetObjectResponse> responseBytes = ResponseBytes.fromByteArray(getObjectResponse, bytes);
+        when(s3Client.getObjectAsBytes(Mockito.any(GetObjectRequest.class))).thenReturn(responseBytes);
+
+        // Act
+        ResponseBytes<GetObjectResponse> result = documentService.download(Folder.LEASE, "file.txt");
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(responseBytes, result);
     }
 
     @Test

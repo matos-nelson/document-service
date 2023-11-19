@@ -2,6 +2,8 @@ package org.rent.circle.document.api.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import java.net.URL;
+import java.time.Duration;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,6 +19,8 @@ import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.ListObjectsRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
 @ApplicationScoped
 public class DocumentService {
@@ -24,14 +28,16 @@ public class DocumentService {
     @Inject
     S3Client s3Client;
 
+    @Inject
+    S3Presigner s3Presigner;
+
     @ConfigProperty(name = "document.bucket.name")
     private String bucketName;
 
     public List<FileObject> getFileListing(Long ownerId) {
-        String folder = bucketName;
 
         ListObjectsRequest listRequest = ListObjectsRequest.builder()
-            .bucket(folder)
+            .bucket(bucketName)
             .prefix(ownerId.toString())
             .build();
 
@@ -59,5 +65,21 @@ public class DocumentService {
             .key(folder.value + "/" + file)
             .build();
         return s3Client.getObjectAsBytes(request);
+    }
+
+    public URL generateUrl(Folder folder, String filename) {
+
+        PutObjectRequest objectRequest = PutObjectRequest.builder()
+            .bucket(bucketName)
+            .key(folder.value + "/" + filename)
+            .contentType("text/plain")
+            .build();
+
+        PutObjectPresignRequest putObjectPresignRequest = PutObjectPresignRequest.builder()
+            .signatureDuration(Duration.ofMinutes(5))
+            .putObjectRequest(objectRequest)
+            .build();
+
+        return s3Presigner.presignPutObject(putObjectPresignRequest).url();
     }
 }

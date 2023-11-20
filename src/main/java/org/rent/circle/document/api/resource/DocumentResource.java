@@ -64,7 +64,7 @@ public class DocumentResource {
     }
 
     @GET
-    @Path("owner/{id}")
+    @Path("/list/owner/{id}")
     public List<FileObject> listFiles(@NotNull @PathParam("id") Long id) {
         return documentService.getFileListing(id);
     }

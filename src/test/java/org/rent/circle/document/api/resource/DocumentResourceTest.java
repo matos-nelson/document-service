@@ -29,7 +29,7 @@ public class DocumentResourceTest {
         given()
             .contentType("application/json")
             .when()
-            .get("/owner/" + ownerId)
+            .get("list/owner/" + ownerId)
             .then()
             .statusCode(HttpStatus.SC_OK)
             .body("[0].key", is("123/file.txt"),

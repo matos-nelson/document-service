@@ -2,6 +2,7 @@ package org.rent.circle.document.api.resource;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
@@ -103,5 +104,21 @@ public class DocumentResourceTest {
             .then()
             .statusCode(HttpStatus.SC_OK)
             .body(is(fileContent));
+    }
+
+    @Test
+    public void GET_generateUploadUrl_WhenCalled_ShouldReturnUrl() {
+        // Arrange
+        String filename = "test.txt";
+
+        // Act
+        // Assert
+        given()
+            .contentType("application/json")
+            .when()
+            .get("/upload/url/folder/" + Folder.LEASE.value + "/file/" + filename)
+            .then()
+            .statusCode(HttpStatus.SC_OK)
+            .body(notNullValue());
     }
 }

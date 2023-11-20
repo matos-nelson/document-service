@@ -13,6 +13,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.ResponseBuilder;
 import jakarta.ws.rs.core.Response.Status;
+import java.net.URL;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -54,6 +55,12 @@ public class DocumentResource {
         response.header("Content-Disposition", "attachment;filename=" + file);
         response.header("Content-Type", objectBytes.response().contentType());
         return response.build();
+    }
+
+    @GET
+    @Path("upload/url/folder/{folder}/file/{file}")
+    public URL generateUploadUrl(@NotNull Folder folder, @NotBlank String file) {
+        return documentService.generateUrl(folder, file);
     }
 
     @GET

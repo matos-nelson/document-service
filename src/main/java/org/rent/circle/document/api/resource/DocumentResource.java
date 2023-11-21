@@ -58,7 +58,7 @@ public class DocumentResource {
     }
 
     @GET
-    @Path("upload/url/folder/{folder}/file/{file}")
+    @Path("generate/upload/url/folder/{folder}/file/{file}")
     public URL generateUploadUrl(@NotNull Folder folder, @NotBlank String file) {
         return documentService.generateUrl(folder, file);
     }

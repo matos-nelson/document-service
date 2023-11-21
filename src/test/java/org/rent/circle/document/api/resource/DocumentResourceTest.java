@@ -116,7 +116,7 @@ public class DocumentResourceTest {
         given()
             .contentType("application/json")
             .when()
-            .get("/upload/url/folder/" + Folder.LEASE.value + "/file/" + filename)
+            .get("generate/upload/url/folder/" + Folder.LEASE.value + "/file/" + filename)
             .then()
             .statusCode(HttpStatus.SC_OK)
             .body(notNullValue());

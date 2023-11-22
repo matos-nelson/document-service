@@ -12,30 +12,33 @@ import io.restassured.specification.MultiPartSpecification;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 import org.rent.circle.document.api.S3TestResource;
+import org.rent.circle.document.api.annotaton.AuthUser;
 import org.rent.circle.document.api.enums.Folder;
 
 @QuarkusTest
 @TestHTTPEndpoint(DocumentResource.class)
 @QuarkusTestResource(S3TestResource.class)
+@AuthUser
 public class DocumentResourceTest {
+
 
     @Test
     public void GET_WhenCalled_ShouldReturnFileListing() {
         // Arrange
-        long ownerId = 123L;
 
         // Act
         // Assert
         given()
             .contentType("application/json")
             .when()
-            .get("list/owner/" + ownerId)
+            .get("list")
             .then()
             .statusCode(HttpStatus.SC_OK)
-            .body("[0].key", is("123/file.txt"),
-                "[0].directory", is("123/"),
+            .body("size()", is(1),
+                "[0].key", is(Folder.LEASE.value + "/file.txt"),
+                "[0].directory", is(Folder.LEASE.value + "/"),
                 "[0].fileName", is("file.txt"),
-                "[0].size", is(11));
+                "[0].size", is(12));
     }
 
     @Test
@@ -82,22 +85,9 @@ public class DocumentResourceTest {
         // Arrange
         String fileContent = "File Content";
         String filename = "file.txt";
-        MultiPartSpecification multiPartSpecification = new MultiPartSpecBuilder(fileContent.getBytes())
-            .fileName(filename)
-            .mimeType("text/plain")
-            .build();
 
         // Act
         // Assert
-        given()
-            .multiPart(multiPartSpecification)
-            .formParam("filename", filename)
-            .formParam("mimetype", "text/plain")
-            .when()
-            .put("upload/folder/" + Folder.LEASE.value)
-            .then()
-            .statusCode(HttpStatus.SC_CREATED);
-
         given()
             .when()
             .get("/folder/" + Folder.LEASE.value + "/file/" + filename)

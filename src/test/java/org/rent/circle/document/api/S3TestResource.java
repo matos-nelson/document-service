@@ -4,6 +4,7 @@ import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import org.rent.circle.document.api.enums.Folder;
 import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.localstack.LocalStackContainer;
 import org.testcontainers.containers.localstack.LocalStackContainer.EnabledService;
@@ -54,10 +55,16 @@ public class S3TestResource implements QuarkusTestResourceLifecycleManager {
 
                 PutObjectRequest objectRequest = PutObjectRequest.builder()
                     .bucket(bucketName)
-                    .key("123/file.txt")
+                    .key("test_user/" + Folder.LEASE.value + "/file.txt")
                     .build();
 
-                client.putObject(objectRequest, RequestBody.fromString("Hello World"));
+                PutObjectRequest folderObjectRequest = PutObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key("test_user/")
+                    .build();
+
+                client.putObject(objectRequest, RequestBody.fromString("File Content"));
+                client.putObject(folderObjectRequest, RequestBody.fromString(""));
             }
 
             Map<String, String> properties = new HashMap<>();

@@ -2,6 +2,7 @@ package org.rent.circle.document.api.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.validation.constraints.NotNull;
 import java.net.URL;
 import java.time.Duration;
 import java.util.Comparator;
@@ -34,44 +35,48 @@ public class DocumentService {
     @ConfigProperty(name = "document.bucket.name")
     private String bucketName;
 
-    public List<FileObject> getFileListing(Long ownerId) {
+    public List<FileObject> getFileListing(@NotNull String userId) {
 
         ListObjectsRequest listRequest = ListObjectsRequest.builder()
             .bucket(bucketName)
-            .prefix(ownerId.toString())
+            .prefix(userId)
             .build();
 
         return s3Client.listObjects(listRequest).contents().stream()
-            .map(item -> new FileObject(item.key(), item.size()))
+            .map(item -> new FileObject(item.key().replace(userId + "/", ""), item.size()))
+            .filter(item -> !item.getFileName().isBlank())
             .sorted(Comparator.comparing(FileObject::getDirectory))
             .collect(Collectors.toList());
     }
 
-    public PutObjectResponse upload(Folder folder, FormData formData) {
+    public PutObjectResponse upload(@NotNull String userId, Folder folder, FormData formData) {
 
+        String key = userId + "/" + folder.value + "/" + formData.getFilename();
         PutObjectRequest request = PutObjectRequest.builder()
             .bucket(bucketName)
-            .key(folder.value + "/" + formData.getFilename())
+            .key(key)
             .contentType(formData.getMimetype())
             .build();
 
         return s3Client.putObject(request, RequestBody.fromFile(formData.getData()));
     }
 
-    public ResponseBytes<GetObjectResponse> download(Folder folder, String file) {
+    public ResponseBytes<GetObjectResponse> download(@NotNull String userId, Folder folder, String file) {
 
+        String key = userId + "/" + folder.value + "/" + file;
         GetObjectRequest request = GetObjectRequest.builder()
             .bucket(bucketName)
-            .key(folder.value + "/" + file)
+            .key(key)
             .build();
         return s3Client.getObjectAsBytes(request);
     }
 
-    public URL generateUrl(Folder folder, String filename) {
+    public URL generateUrl(@NotNull String userId, Folder folder, String filename) {
 
+        String key = userId + "/" + folder.value + "/" + filename;
         PutObjectRequest objectRequest = PutObjectRequest.builder()
             .bucket(bucketName)
-            .key(folder.value + "/" + filename)
+            .key(key)
             .contentType("text/plain")
             .build();
 

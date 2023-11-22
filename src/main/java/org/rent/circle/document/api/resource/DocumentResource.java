@@ -69,7 +69,7 @@ public class DocumentResource {
     }
 
     @GET
-    @Path("/list")
+    @Path("list")
     public List<FileObject> listFiles() {
         return documentService.getFileListing(jwt.getName());
     }

@@ -43,7 +43,8 @@ public class DocumentService {
             .build();
 
         return s3Client.listObjects(listRequest).contents().stream()
-            .map(item -> new FileObject(item.key(), item.size()))
+            .map(item -> new FileObject(item.key().replace(userId + "/", ""), item.size()))
+            .filter(item -> !item.getFileName().isBlank())
             .sorted(Comparator.comparing(FileObject::getDirectory))
             .collect(Collectors.toList());
     }

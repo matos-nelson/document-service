@@ -34,10 +34,11 @@ public class DocumentResourceTest {
             .get("list")
             .then()
             .statusCode(HttpStatus.SC_OK)
-            .body("[0].key", is("test_user/file.txt"),
-                "[0].directory", is("test_user/"),
+            .body("size()", is(1),
+                "[0].key", is(Folder.LEASE.value + "/file.txt"),
+                "[0].directory", is(Folder.LEASE.value + "/"),
                 "[0].fileName", is("file.txt"),
-                "[0].size", is(11));
+                "[0].size", is(12));
     }
 
     @Test
@@ -84,22 +85,9 @@ public class DocumentResourceTest {
         // Arrange
         String fileContent = "File Content";
         String filename = "file.txt";
-        MultiPartSpecification multiPartSpecification = new MultiPartSpecBuilder(fileContent.getBytes())
-            .fileName(filename)
-            .mimeType("text/plain")
-            .build();
 
         // Act
         // Assert
-        given()
-            .multiPart(multiPartSpecification)
-            .formParam("filename", filename)
-            .formParam("mimetype", "text/plain")
-            .when()
-            .put("upload/folder/" + Folder.LEASE.value)
-            .then()
-            .statusCode(HttpStatus.SC_CREATED);
-
         given()
             .when()
             .get("/folder/" + Folder.LEASE.value + "/file/" + filename)

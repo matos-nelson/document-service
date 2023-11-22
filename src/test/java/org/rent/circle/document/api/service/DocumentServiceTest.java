@@ -2,11 +2,13 @@ package org.rent.circle.document.api.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
+import jakarta.validation.ConstraintViolationException;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -51,8 +53,20 @@ public class DocumentServiceTest {
     DocumentService documentService;
 
     @Test
+    public void upload_WhenGivenUserIdIsNull_ShouldThrowException() {
+        // Arrange
+
+        // Act
+        // Assert
+        assertThrows(ConstraintViolationException.class, () ->
+            documentService.upload(null, Folder.LEASE, FormData.builder().build()));
+
+    }
+
+    @Test
     public void upload_WhenCalled_ShouldUploadDocument() throws IOException {
         // Arrange
+        String userId = "abc123";
         Folder folder = Folder.LEASE;
         File file = File.createTempFile("test", "txt", new File("src/test/resources"));
         file.deleteOnExit();
@@ -66,7 +80,7 @@ public class DocumentServiceTest {
             putObjectResponse);
 
         // Act
-        PutObjectResponse result = documentService.upload(folder, formData);
+        PutObjectResponse result = documentService.upload(userId, folder, formData);
 
         // Assert
         assertNotNull(result);
@@ -74,15 +88,27 @@ public class DocumentServiceTest {
     }
 
     @Test
+    public void download_WhenGivenUserIdIsNull_ShouldThrowException() {
+        // Arrange
+
+        // Act
+        // Assert
+        assertThrows(ConstraintViolationException.class, () ->
+            documentService.download(null, Folder.LEASE, "file.txt"));
+
+    }
+
+    @Test
     public void download_WhenCalled_ShouldReturnDocument() {
         // Arrange
+        String userId = "abc123";
         byte[] bytes = new byte[10];
         GetObjectResponse getObjectResponse = GetObjectResponse.builder().build();
         ResponseBytes<GetObjectResponse> responseBytes = ResponseBytes.fromByteArray(getObjectResponse, bytes);
         when(s3Client.getObjectAsBytes(Mockito.any(GetObjectRequest.class))).thenReturn(responseBytes);
 
         // Act
-        ResponseBytes<GetObjectResponse> result = documentService.download(Folder.LEASE, "file.txt");
+        ResponseBytes<GetObjectResponse> result = documentService.download(userId, Folder.LEASE, "file.txt");
 
         // Assert
         assertNotNull(result);
@@ -90,9 +116,20 @@ public class DocumentServiceTest {
     }
 
     @Test
+    public void getFileListing_WhenGivenUserIdIsNull_ShouldThrowException() {
+        // Arrange
+
+        // Act
+        // Assert
+        assertThrows(ConstraintViolationException.class, () ->
+            documentService.getFileListing(null));
+
+    }
+
+    @Test
     public void getFileListing_WhenCalled_ShouldReturnFileListing() {
         // Arrange
-        long ownerId = 123L;
+        String userId = "abc123";
         S3Object s3Object = S3Object.builder().key("file.txt").size(100L).build();
         ListObjectsResponse listObjectsResponse = ListObjectsResponse.builder()
             .contents(Collections.singleton(s3Object))
@@ -100,7 +137,7 @@ public class DocumentServiceTest {
         when(s3Client.listObjects(Mockito.any(ListObjectsRequest.class))).thenReturn(listObjectsResponse);
 
         // Act
-        List<FileObject> result = documentService.getFileListing(ownerId);
+        List<FileObject> result = documentService.getFileListing(userId);
 
         // Assert
         assertNotNull(result);
@@ -108,8 +145,20 @@ public class DocumentServiceTest {
     }
 
     @Test
+    public void generateUrl_WhenGivenUserIdIsNull_ShouldThrowException() {
+        // Arrange
+
+        // Act
+        // Assert
+        assertThrows(ConstraintViolationException.class, () ->
+            documentService.generateUrl(null, Folder.LEASE, "file.txt"));
+
+    }
+
+    @Test
     public void generateUrl_WhenCalled_ShouldReturnUrl() throws URISyntaxException, MalformedURLException {
         // Arrange
+        String userId = "abc123";
         URL url = new URI("http://localhost:4200").toURL();
         PresignedPutObjectRequest classUnderTestSpy = Mockito.spy(PresignedPutObjectRequest.builder()
             .expiration(Instant.now())
@@ -125,7 +174,7 @@ public class DocumentServiceTest {
         when(s3Presigner.presignPutObject(Mockito.any(PutObjectPresignRequest.class))).thenReturn(classUnderTestSpy);
 
         // Act
-        URL result = documentService.generateUrl(Folder.LEASE, "test.txt");
+        URL result = documentService.generateUrl(userId, Folder.LEASE, "test.txt");
 
         // Assert
         assertNotNull(result);

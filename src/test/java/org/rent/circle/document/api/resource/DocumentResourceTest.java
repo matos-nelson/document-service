@@ -12,28 +12,30 @@ import io.restassured.specification.MultiPartSpecification;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 import org.rent.circle.document.api.S3TestResource;
+import org.rent.circle.document.api.annotaton.AuthUser;
 import org.rent.circle.document.api.enums.Folder;
 
 @QuarkusTest
 @TestHTTPEndpoint(DocumentResource.class)
 @QuarkusTestResource(S3TestResource.class)
+@AuthUser
 public class DocumentResourceTest {
+
 
     @Test
     public void GET_WhenCalled_ShouldReturnFileListing() {
         // Arrange
-        long ownerId = 123L;
 
         // Act
         // Assert
         given()
             .contentType("application/json")
             .when()
-            .get("list/owner/" + ownerId)
+            .get("list")
             .then()
             .statusCode(HttpStatus.SC_OK)
-            .body("[0].key", is("123/file.txt"),
-                "[0].directory", is("123/"),
+            .body("[0].key", is("test_user/file.txt"),
+                "[0].directory", is("test_user/"),
                 "[0].fileName", is("file.txt"),
                 "[0].size", is(11));
     }

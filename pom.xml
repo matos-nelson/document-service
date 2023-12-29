@@ -48,7 +48,18 @@
     <dependency>
       <groupId>org.rent.circle</groupId>
       <artifactId>rc-service-base</artifactId>
-      <version>1.0.4</version>
+      <version>1.0.5</version>
+      <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-hibernate-orm-panache</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-jdbc-mysql</artifactId>
+        </exclusion>
+     </exclusions>
     </dependency>
     <dependency>
       <groupId>software.amazon.awssdk</groupId>

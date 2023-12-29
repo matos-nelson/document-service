@@ -9,6 +9,10 @@ Before running application these variables need to be defined.
 - ISSUER_PROJECT_ID
 - BASE_BUCKET_NAME
 
+## Auth
+This service requires a jwt to be passed in requests that require auth. The header to be used is defined in
+application.properties.
+
 ## Running the application in dev mode
 
 You can run your application in dev mode that enables live coding using:

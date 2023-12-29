@@ -25,5 +25,11 @@ jobs:
         java-version: '17'
         distribution: 'corretto'
         cache: maven
+    - name: Setup Github Maven Packages Settings
+      uses: whelk-io/maven-settings-xml-action@v21
+      with:
+        active_profiles: '["github"]'
+        repositories: '[{ "id": "github", "url": "${{ secrets.REPOSITORY_URL }}",  "snapshots": { "enabled" : "true" } }]'
+        servers: '[{"id": "github", "username": "${{ secrets.USER_NAME }}", "password": "${{ secrets.READ_PACKAGES }}" }]'
     - name: Build with Maven
       run: mvn -B package --file pom.xml

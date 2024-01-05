@@ -56,6 +56,10 @@ public class DocumentResource {
 
         ResponseBytes<GetObjectResponse> objectBytes = documentService.download(jwt.getName(), folder, file);
 
+        if (objectBytes == null) {
+            return Response.noContent().build();
+        }
+
         ResponseBuilder response = Response.ok(objectBytes.asUtf8String());
         response.header("Content-Disposition", "attachment;filename=" + file);
         response.header("Content-Type", objectBytes.response().contentType());

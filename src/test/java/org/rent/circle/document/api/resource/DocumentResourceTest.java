@@ -81,6 +81,20 @@ public class DocumentResourceTest {
     }
 
     @Test
+    public void GET_DownloadFile_WhenFileDoesNotExist_ShouldReturnNoContent() {
+        // Arrange
+        String filename = "temp.txt";
+
+        // Act
+        // Assert
+        given()
+            .when()
+            .get("/folder/" + Folder.LEASE.value + "/file/" + filename)
+            .then()
+            .statusCode(HttpStatus.SC_NO_CONTENT);
+    }
+
+    @Test
     public void GET_DownloadFile_WhenCalled_ShouldReturnFile() {
         // Arrange
         String fileContent = "File Content";

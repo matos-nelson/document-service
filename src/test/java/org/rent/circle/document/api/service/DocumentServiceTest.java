@@ -2,7 +2,9 @@ package org.rent.circle.document.api.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 import io.quarkus.test.InjectMock;
@@ -24,6 +26,7 @@ import org.mockito.Mockito;
 import org.rent.circle.document.api.dto.FileObject;
 import org.rent.circle.document.api.dto.FormData;
 import org.rent.circle.document.api.enums.Folder;
+import software.amazon.awssdk.awscore.exception.AwsServiceException;
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.http.SdkHttpMethod;
@@ -96,6 +99,20 @@ public class DocumentServiceTest {
         assertThrows(ConstraintViolationException.class, () ->
             documentService.download(null, Folder.LEASE, "file.txt"));
 
+    }
+
+    @Test
+    public void download_WhenFileDoesNotExist_ShouldReturnNull() {
+        // Arrange
+        String userId = "abc123";
+        doThrow(AwsServiceException.builder().build()).when(s3Client)
+            .getObjectAsBytes(Mockito.any(GetObjectRequest.class));
+
+        // Act
+        ResponseBytes<GetObjectResponse> result = documentService.download(userId, Folder.LEASE, "file.txt");
+
+        // Assert
+        assertNull(result);
     }
 
     @Test

@@ -8,10 +8,12 @@ import java.time.Duration;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.rent.circle.document.api.dto.FileObject;
 import org.rent.circle.document.api.dto.FormData;
 import org.rent.circle.document.api.enums.Folder;
+import software.amazon.awssdk.awscore.exception.AwsServiceException;
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -24,6 +26,7 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
 @ApplicationScoped
+@Slf4j
 public class DocumentService {
 
     @Inject
@@ -68,7 +71,13 @@ public class DocumentService {
             .bucket(bucketName)
             .key(key)
             .build();
-        return s3Client.getObjectAsBytes(request);
+
+        try {
+            return s3Client.getObjectAsBytes(request);
+        } catch (AwsServiceException e) {
+            log.info(e.getMessage());
+            return null;
+        }
     }
 
     public URL generateUrl(@NotNull String userId, Folder folder, String filename) {
